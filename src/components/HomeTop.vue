@@ -17,8 +17,8 @@
 <script>
 export default {
   methods: {
-    handleRefresh() {
-      this.$emit('refresh')
+    handleRefresh () {
+      this.$bus.$emit(this.$busActions.REFRESH_ALL_GAME)
     }
   }
 }

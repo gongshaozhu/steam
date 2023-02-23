@@ -5,9 +5,9 @@
         <swiper-slide v-for="item in bannerList" :key="item.id">
           <img :src="item.imgUrl" alt="">
         </swiper-slide>
-        <div class="swiper-button-next swiper-button-white"></div>
-        <div class="swiper-button-prev swiper-button-white"></div>
       </swiper>
+      <div class="swiper-button-next swiper-button-white"></div>
+      <div class="swiper-button-prev swiper-button-white"></div>
    </div>
     <div class="other">
       <div class="l"></div>
@@ -92,6 +92,7 @@ export default {
   .banner {
     height: 128px;
     cursor: pointer;
+    position: relative;
     img {
       width: 1136px;
       height: 128px;
@@ -134,6 +135,7 @@ export default {
     flex-direction: column;
     flex-wrap: wrap;
     display: flex;
+    padding-bottom: 0;
     .con {
       display: flex;
       flex-wrap: wrap;

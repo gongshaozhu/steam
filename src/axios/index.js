@@ -15,4 +15,10 @@ export default {
   async getDetail(params) {
     return await axios.get('/game/detail', { params })
   },
+  async filterItem(params) {
+    return await axios.get('/game/filterItem', { params })
+  },
+  async filterList(data) {
+    return await axios.post('/game/filter', data)
+  },
 }

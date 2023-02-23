@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper" @click="handleDetail">
+  <div class="item-wrapper" @click="handleDetail">
     <img class="cover" :src="item.coverUrl" alt="">
     <p class="des">{{item.name}}</p>
     <div class="tag">
@@ -37,10 +37,11 @@ export default {
 </script>
 
 <style scoped lang="less">
-.wrapper {
+.item-wrapper {
   cursor: pointer;
   width: 265px;
   margin-right: 12px;
+  margin-bottom: 20px;
   &:nth-child(4n) {
     margin-right: 0;
   }
@@ -67,7 +68,7 @@ export default {
     margin-bottom: 14px;
     opacity: .8;
     span {
-      width: 38px;
+      padding: 0 5px;
       height: 18px;
       margin-right: 8px;
       background: rgba(255,255,255,0.3);
@@ -96,7 +97,7 @@ export default {
         display: flex;
         font-weight: bold;
         align-items: center;
-        font-family: Bebas;
+        font-family: MyBebas;
       }
       .unit {
         font-size: 12px;

@@ -1,12 +1,14 @@
 <template>
   <div id="app">
-    <HomeTop @refresh="handleRefresh"/>
+    <HomeTop/>
     <div class="app-content">
       <div class="collection">
         <MyCollection/>
       </div>
-      <div class="right-con">
-        <router-view ref="view"/>
+      <div class="right-con custom-scroll">
+        <keep-alive :include="['AllGame', 'HomeView']">
+          <router-view ref="view"/>
+        </keep-alive>
       </div>
     </div>
   </div>
@@ -50,17 +52,6 @@ export default {
       display: flex;
       flex: 1;
       overflow: auto;
-      &::-webkit-scrollbar {
-        width: 6px;
-      }
-      &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, .4);
-        border-radius: 3px;
-      }
-      &::-webkit-scrollbar-track {
-        border-radius: 0;
-        background: #171926;
-      }
     }
   }
 }
