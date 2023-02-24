@@ -6,40 +6,54 @@
     infinite-scroll-immediate="false"
   >
     <div class="head">
-      <span
-        class="tag"
-        :class="[v === category ? 'active' : '']"
-        v-for="(v, i) in categoryList"
-        :key="i"
-        @click="handleTab(v)"
-      >{{v}}</span>
-      <div class="price-slide">
-        <el-slider
-          v-model="priceRange"
-          range
-          :show-tooltip="false"
-          :max="50"
-        >
-        </el-slider>
-        <div class="price">${{ priceRange[0] }}&nbsp;&nbsp;&nbsp;&nbsp;${{priceRange[1]}}</div>
+      <div>
+        <span
+          class="tag"
+          :class="[v === category ? 'active' : '']"
+          v-for="(v, i) in categoryList"
+          :key="i"
+          @click="handleTab(v)"
+        >{{v}}</span>
+      </div>
+      <div class="right">
+        <div class="price-slide" v-if="maxPrice">
+          <vue-slider
+            v-model="priceRange"
+            :tooltip="'always'"
+            :tooltip-placement="['bottom', 'bottom']"
+            :min="minPrice"
+            :max="maxPrice"
+            :tooltip-formatter="formatter"
+            @change="handleChangePrice"
+          >
+          </vue-slider>
+        </div>
+        <div>
+          <span>Classificar por preço</span>
+          <span></span>
+        </div>
       </div>
     </div>
-    <div
-      class="content"
-    >
-      <HomeItem1
-        v-for="(item, i) in gameList"
-        :key="i"
-        :item="item"
-      />
-      <p class="btm" v-if="loading">loading...</p>
-      <p class="btm" v-if="noMore">no more</p>
+    <div class="content">
+      <transition-group name="list" tag="div">
+        <HomeItem1
+          v-for="(item, i) in gameList"
+          :key="i"
+          :item="item"
+        />
+      </transition-group>
+
+<!--      <p class="btm" v-if="loading">loading...</p>
+      <p class="btm" v-if="noMore">no more</p>-->
     </div>
   </div>
 </template>
 
 <script>
 import HomeItem1 from '@/views/home/HomeItem1'
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
+
 
 export default {
   name: 'AllGame',
@@ -50,14 +64,16 @@ export default {
       loading: false,
       noMore: false,
       //---------//
+      maxPrice: null,
+      minPrice: null,
       pageNum: 1,
       pageSize: 28,
       category: '',
       packageId: null,
       searchWord: null,
       sortType: 1,
-
-      priceRange: [0, 33],
+      priceRange: [null, null],
+      formatter: v => `$${v}`,
     }
   },
   computed: {
@@ -67,16 +83,20 @@ export default {
   },
   components: {
     HomeItem1,
+    VueSlider,
   },
   mounted() {
-    this.$bus.$on(this.$busActions.REFRESH_ALL_GAME, this.handleTab)
-    this.handleInit()
+    this.$bus.$on(this.$busActions.REFRESH_ALL_GAME, this.handleInit)
+    this.handleCategory()
   },
   methods: {
-    async handleInit() {
+    async handleCategory() {
       try {
         const res = await this.$api.filterItem()
         this.categoryList = res.categoryList
+        this.priceRange = [res.minPrice, res.maxPrice]
+        this.maxPrice = res.maxPrice
+        this.minPrice = res.minPrice
         this.category = this.categoryList[0]
         await this.handleList()
       } catch (e) {
@@ -93,8 +113,8 @@ export default {
           category: this.category,
           // packageId: this.packageId,
           // searchWord: this.searchWord,
-          // minPrice: this.priceRange[0],
-          // maxPrice: this.priceRange[1],
+          minPrice: this.priceRange[0],
+          maxPrice: this.priceRange[1],
           // sortType: this.sortType,
         }
         for(let i in data) {
@@ -103,6 +123,9 @@ export default {
           }
         }
         const res = await this.$api.filterList(data)
+        if (this.pageNum === 1) {
+          this.gameList = []
+        }
         this.gameList = [...this.gameList, ...res.records]
         if (res.records.length < this.pageSize) {
           this.noMore = true
@@ -117,9 +140,18 @@ export default {
     },
     async handleTab(v) {
       this.category = v || this.category
+      await this.handleInit()
+    },
+    async handleInit() {
       this.pageNum = 1
-      this.gameList = []
       await this.handleList()
+    },
+    handleChangePrice() {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(async () => {
+        await this.handleInit()
+        clearTimeout(this.timer)
+      }, 300)
     },
     handleLoad() {
       this.handleList()
@@ -146,6 +178,7 @@ export default {
     position: sticky;
     top: 0;
     z-index: 10;
+    justify-content: space-between;
     .tag {
       font-size: 16px;
       font-family: Helvetica-Bold, Helvetica;
@@ -164,11 +197,60 @@ export default {
       display: flex;
       justify-content: center;
       flex-direction: column;
+      margin-right: 30px;
       .price {
         font-size: 14px;
         font-weight: bold;
         color: #C9C9C9;
         margin-top: 8px;
+      }
+      /deep/.vue-slider {
+        margin-top: -17px;
+        height: 6px!important;
+        .vue-slider-rail {
+          background: rgba(144, 145, 151, .4);
+        }
+        .vue-slider-process {
+          background: rgba(247, 188, 41, 0.6);
+        }
+        .vue-slider-dot {
+          height: 10px!important;
+          &:hover {
+            cursor: grab;
+          }
+        }
+        .vue-slider-dot-handle {
+          width: 14px;
+          height: 10px;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
+          &:hover {
+            cursor: grab;
+          }
+        }
+        .vue-slider-dot-tooltip-inner {
+          background: transparent;
+          padding: 0;
+          font-size: 14px;
+          font-family: Helvetica-Bold, Helvetica;
+          font-weight: bold;
+          color: #C9C9C9;
+        }
+        .vue-slider-dot-tooltip-bottom {
+          transform: translate(-50%,66%);
+        }
+        .vue-slider-dot-tooltip-inner-bottom::after {
+          bottom: 100%;
+          left: 50%;
+          transform: translate(-50%, 0);
+          height: 0;
+          width: 0;
+          border-color: transparent;
+          border-style: solid;
+          border-width: 0;
+          border-bottom-color: inherit;
+        }
       }
       /deep/.el-slider__runway {
         width: 160px;
@@ -201,7 +283,17 @@ export default {
         border-radius: 3px;
       }
     }
-
+    .right {
+      display: flex;
+      align-items: center;
+      padding-right: 30px;
+      span {
+        font-size: 16px;
+        font-family: Helvetica-Bold, Helvetica;
+        font-weight: bold;
+        color: #909197;
+      }
+    }
   }
   .content {
     margin-top: 12px;
@@ -211,10 +303,14 @@ export default {
     box-sizing: border-box;
     padding: 12px 20px 0;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     flex: 1;
     align-content: flex-start;
+    >div {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+    }
     .btm {
       margin-bottom: 20px;
       width: 100%;

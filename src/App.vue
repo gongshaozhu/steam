@@ -6,9 +6,7 @@
         <MyCollection/>
       </div>
       <div class="right-con custom-scroll">
-        <keep-alive :include="['AllGame', 'HomeView']">
-          <router-view ref="view"/>
-        </keep-alive>
+        <router-view ref="view"/>
       </div>
     </div>
   </div>

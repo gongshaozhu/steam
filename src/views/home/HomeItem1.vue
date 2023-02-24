@@ -42,6 +42,7 @@ export default {
   width: 265px;
   margin-right: 12px;
   margin-bottom: 20px;
+
   &:nth-child(4n) {
     margin-right: 0;
   }

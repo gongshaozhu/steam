@@ -19,17 +19,21 @@
         <span @click="handleAllGame">ALL GAME</span>
       </div>
       <div class="con">
-        <HomeItem1
-          v-for="(item, i) in hotList" :key="i" :item="item"
-        />
+        <transition-group name="list" tag="div">
+          <HomeItem1
+            v-for="(item, i) in hotList" :key="i" :item="item"
+          />
+        </transition-group>
       </div>
     </div>
     <div class="list2">
-      <div class="item list-back" v-for="item in packageList" :key="item.id">
-        <HomeItem2
-          :item="item"
-        />
-      </div>
+      <transition-group name="list" tag="div">
+        <div class="item list-back" v-for="item in packageList" :key="item.id">
+          <HomeItem2
+            :item="item"
+          />
+        </div>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -87,6 +91,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+
 .home {
   width: 1136px;
   .banner {
@@ -139,6 +144,10 @@ export default {
     .con {
       display: flex;
       flex-wrap: wrap;
+      >div {
+        display: flex;
+        flex-wrap: wrap;
+      }
     }
     .head {
       font-size: 16px;
@@ -170,6 +179,11 @@ export default {
     flex-wrap: wrap;
     display: flex;
     margin-top: 12px;
+    >div {
+      flex-direction: row;
+      flex-wrap: wrap;
+      display: flex;
+    }
     .item {
       padding: 20px;
       width: 560px;
