@@ -21,4 +21,7 @@ export default {
   async filterList(data) {
     return await axios.post('/game/filter', data)
   },
+  async searchList(params) {
+    return await axios.get('/game/search', { params })
+  },
 }

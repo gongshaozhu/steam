@@ -4,10 +4,22 @@
     <div class="right">
       <img class="back" src="@/assets/back.png" alt="" @click="$router.back()"/>
       <img class="refresh" src="@/assets/refresh.png" alt="" @click="handleRefresh"/>
-      <div class="search">
-        <input type="text" placeholder="Search">
-        <div class="sbtn">
+      <div class="search"  ref="search-result">
+        <input
+          type="text"
+          v-model="value"
+          placeholder="Search"
+          @keydown.enter="handleRefresh"
+          @focus="handleFocus"
+        >
+        <div class="sbtn" @click="handleRefresh">
           <img src="@/assets/search.png" alt="">
+        </div>
+        <div
+          class="search-result custom-scroll"
+          v-show="show && result && result.length > 0"
+        >
+          <div v-for="(v, i) in result" :key="i"><img :src="v.coverUrl" alt=""></div>
         </div>
       </div>
     </div>
@@ -16,9 +28,50 @@
 
 <script>
 export default {
+  data() {
+    return {
+      value: '',
+      result: [],
+      show: true,
+    }
+  },
+  watch: {
+    value(newV) {
+      this.$store.commit('changeSearchValue', newV)
+      console.log(1)
+      if (this.$route.name === 'home') {
+        this.handleSearch()
+      }
+    }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleContails)
+  },
   methods: {
+    handleFocus() {
+      console.log(33)
+    },
+    handleContails(e) {
+      if (this.$refs['search-result'] && !this.$refs['search-result'].contains(e.target)) {
+        this.show = false
+      } else {
+        this.show = true
+      }
+    },
     handleRefresh () {
-      this.$bus.$emit(this.$busActions.REFRESH_ALL_GAME)
+      if (this.$route.name === 'all-game') {
+        this.$bus.$emit(this.$busActions.REFRESH_ALL_GAME)
+      } else {
+        this.value.trim() !== '' && this.$router.push({
+          name: 'all-game'
+        })
+      }
+    },
+    async handleSearch() {
+      const res = await this.$api.searchList({
+        word: this.value
+      })
+      this.result = res
     }
   }
 }
@@ -64,6 +117,21 @@ export default {
       background: #212330;
       padding-left: 12px;
       border-radius: 4px;
+      position: relative;
+      .search-result {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        max-height: 300px;
+        width: 500px;
+        overflow-y: auto;
+        z-index: 91;
+        background: #212330;
+        img {
+          width: 50px;
+          height: 50px;
+        }
+      }
       input {
         height: 36px;
         width: 297px;

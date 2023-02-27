@@ -70,15 +70,22 @@ export default {
       pageSize: 28,
       category: '',
       packageId: null,
-      searchWord: null,
       sortType: 1,
       priceRange: [null, null],
       formatter: v => `$${v}`,
     }
   },
   computed: {
+    searchWord() {
+      return this.$store.state.searchValue
+    },
     disabled () {
       return this.loading || this.noMore
+    }
+  },
+  watch: {
+    searchWord() {
+      // this.handleInit()
     }
   },
   components: {
@@ -112,7 +119,7 @@ export default {
           pageSize: this.pageSize,
           category: this.category,
           // packageId: this.packageId,
-          // searchWord: this.searchWord,
+          searchWord: this.searchWord,
           minPrice: this.priceRange[0],
           maxPrice: this.priceRange[1],
           // sortType: this.sortType,
