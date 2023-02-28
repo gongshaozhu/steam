@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseURL = process.env.NODE_ENV === 'development' ? 'http://game-rent-api.fat.springdance.cn/' : ''
+const baseURL = process.env.NODE_ENV === 'development' ? 'http://game-rent-api.fat.springdance.cn/' : 'http://game-rent-api.fat.springdance.cn/'
 console.log(process.env.NODE_ENV);
 const instance = axios.create({
     baseURL,
