@@ -22,23 +22,29 @@
           <div v-for="(v, i) in result" :key="i"><img :src="v.coverUrl" alt=""></div>
         </div>
       </div>
+      <div @click="handleLogin">登录</div>
     </div>
+    <Login v-if="showLogin" @close="showLogin=false"/>
   </div>
 </template>
 
 <script>
+import Login from './Login'
 export default {
   data() {
     return {
       value: '',
       result: [],
       show: true,
+      showLogin: false,
     }
+  },
+  components: {
+    Login,
   },
   watch: {
     value(newV) {
       this.$store.commit('changeSearchValue', newV)
-      console.log(1)
       if (this.$route.name === 'home') {
         this.handleSearch()
       }
@@ -48,6 +54,9 @@ export default {
     document.addEventListener('click', this.handleContails)
   },
   methods: {
+    handleLogin() {
+      this.showLogin = true
+    },
     handleFocus() {
       console.log(33)
     },
@@ -68,10 +77,14 @@ export default {
       }
     },
     async handleSearch() {
-      const res = await this.$api.searchList({
-        word: this.value
-      })
-      this.result = res
+      clearTimeout(this.timer)
+      this.timer = setTimeout(async () => {
+        const res = await this.$api.searchList({
+          word: this.value
+        })
+        this.result = res
+        clearTimeout(this.timer)
+      }, 50)
     }
   }
 }

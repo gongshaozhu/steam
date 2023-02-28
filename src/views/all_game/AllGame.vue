@@ -37,8 +37,8 @@
     <div class="content">
       <transition-group name="list" tag="div">
         <HomeItem1
-          v-for="(item, i) in gameList"
-          :key="i"
+          v-for="item in gameList"
+          :key="item.id"
           :item="item"
         />
       </transition-group>
@@ -232,6 +232,8 @@ export default {
           border-radius: 0;
           border: none;
           box-shadow: none;
+          background: url("~@/assets/slid.png") no-repeat;
+          background-size: 100%;
           &:hover {
             cursor: grab;
           }
@@ -317,6 +319,7 @@ export default {
       display: flex;
       flex-wrap: wrap;
       flex: 1;
+      align-content: flex-start;
     }
     .btm {
       margin-bottom: 20px;
